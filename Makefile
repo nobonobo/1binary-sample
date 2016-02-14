@@ -1,9 +1,9 @@
 DIST=$(PWD)/dist
 VIRTUALENVCMD=virtualenv
 
-.PHONY: all depends run test build release
+.PHONY: all depends static build run test
 
-all: depends build release
+all: depends build
 
 ./env:
 	$(VIRTUALENVCMD) ./env
@@ -11,7 +11,10 @@ all: depends build release
 depends: ./env
 	env/bin/python src/setup.py develop
 
-build:
+static:
+	./env/bin/python src/manage.py collectstatic
+
+build: static
 	mkdir -p $(DIST)
 	docker build --rm -t localhost/cent6py3 .
 	docker create --name build-app localhost/cent6py3 && \
@@ -22,4 +25,3 @@ run:
 
 test:
 
-release:
